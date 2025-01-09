@@ -26,5 +26,7 @@ See `git-switch --help`. You can:
 - `git-switch become [name]` to switch to an existing persona
 - `git-switch remove [name]` to remove a persona
 
+You may do `git-switch become --global` to switch to a persona globally (i.e. `git config --global ...`). This is useful if you need a particular SSH key active to clone a particular repository.
+
 # How does it work?
 It's super simple. The script reads name, email, and key path from the config for the given persona, then uses `git config ...` to change the user, email, and sshCommand so that the given SSH private key is used during SSH.

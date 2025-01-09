@@ -38,17 +38,17 @@ class Manager:
     def set_persona(self, persona: Persona):
         self.config.personas[persona.persona_name] = persona
 
-    def switch_persona(self, persona_name: str):
+    def switch_persona(self, persona_name: str, _global: bool = False):
         if persona_name not in self.config.personas:
             raise ValueError(f'Persona {persona_name} not found')
         self.config.current_persona = persona_name
         persona = self.config.personas[persona_name]
         
-        # Set the git config values
         import os
-        os.system(f'git config --global user.name "{persona.commit_name}"')
-        os.system(f'git config --global user.email "{persona.email}"')
-        os.system(f'git config --global core.sshCommand "ssh -i {persona.ssh_key_path}"')
+        _global = '--global' if _global else ''
+        os.system(f'git config {_global} user.name "{persona.commit_name}"')
+        os.system(f'git config {_global} user.email "{persona.email}"')
+        os.system(f'git config {_global} core.sshCommand "ssh -i {persona.ssh_key_path}"')
 
     def get_current_persona(self) -> Persona | None:
         if not self.config.current_persona:
@@ -108,6 +108,7 @@ def main():
 
     become_parser = subparsers.add_parser('become', help='Switch to another persona')
     become_parser.add_argument('persona', help='The persona to switch to')
+    become_parser.add_argument('--global', dest='_global', action='store_true', help='Set the persona globally')
 
     rename_parser = subparsers.add_parser('rename', help='Rename a persona')
     rename_parser.add_argument('old_name', help='The old name of the persona')
@@ -152,7 +153,7 @@ def main():
 
         elif args.subcommand == 'become':
             try:
-                manager.switch_persona(args.persona)
+                manager.switch_persona(args.persona, _global=args._global)
                 print(f'Switched to persona {args.persona}')
             except ValueError:
                 print(f'Persona {args.persona} not found')
