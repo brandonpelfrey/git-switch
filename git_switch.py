@@ -133,7 +133,12 @@ def main():
                 print(f'{persona.persona_name}: {persona.commit_name} <{persona.email}>')
 
         elif args.subcommand == 'remove':
-            print('Removing a persona')
+            persona_name = input('Persona name: ')
+            if not manager.has_persona(persona_name):
+                print(f"Persona '{persona_name}' not found")
+                return
+            manager.remove_persona(persona_name)
+            print(f"Removed persona '{persona_name}'")
         
         elif args.subcommand == 'rename':
             old_name = input('Old persona name: ')
